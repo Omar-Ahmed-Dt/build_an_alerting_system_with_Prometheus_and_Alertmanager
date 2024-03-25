@@ -1,0 +1,24 @@
+# alertmanager.yml
+
+route:
+  receiver: default
+  routes:
+    - matchers:
+        - severity="critical"
+      receiver: slack
+receivers:
+  - name: slack
+    slack_configs:
+      - channel: "#monitoring"
+        send_resolved: true
+        api_url: "https://hooks.slack.com/services/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"
+        title: Alert
+        text: >-
+          {{ range .Alerts -}}
+          *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
+          *Description:* {{ .Annotations.description }}
+          *Details:*
+            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
+            {{ end }}
+          {{ end }}
+  - name: default
